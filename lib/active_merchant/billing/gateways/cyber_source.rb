@@ -418,7 +418,7 @@ module ActiveMerchant #:nodoc:
       def add_check(xml, check)
         xml.tag! 'check' do
           xml.tag! 'accountNumber', check.account_number
-          if account_holder_type == "business"
+          if check.account_holder_type == "business"
             xml.tag! 'accountType', "X"
           else
             xml.tag! 'accountType', check.account_type[0]
