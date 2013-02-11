@@ -420,6 +420,7 @@ module ActiveMerchant #:nodoc:
           xml.tag! 'accountNumber', check.account_number
           xml.tag! 'accountType', check.account_type[0]
           xml.tag! 'bankTransitNumber', check.routing_number
+          xml.tag! 'secCode', check.security_code if check.security_code
         end
       end
 
@@ -562,7 +563,9 @@ module ActiveMerchant #:nodoc:
       # Contact CyberSource, make the SOAP request, and parse the reply into a
       # Response object
       def commit(request, options)
-        response = parse(ssl_post(test? ? self.test_url : self.live_url, build_request(request, options)))
+        request = build_request(request, options)
+        Rails.logger.info request
+        response = parse(ssl_post(test? ? self.test_url : self.live_url, request))
 
         success = response[:decision] == "ACCEPT"
         message = @@response_codes[('r' + response[:reasonCode]).to_sym] rescue response[:message]
