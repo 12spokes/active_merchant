@@ -498,7 +498,7 @@ module ActiveMerchant #:nodoc:
         xml.tag! 'recurringSubscriptionInfo' do
           if reference
             _, subscription_id, _ = reference.split(";")
-            xml.tag! 'subscriptionID',  subscription_id
+            xml.tag! 'subscriptionID',  subscription_id || reference
           end
 
           xml.tag! 'status',            options[:subscription][:status]                         if options[:subscription][:status]
@@ -568,9 +568,7 @@ module ActiveMerchant #:nodoc:
       # Response object
       def commit(request, options)
         request = build_request(request, options)
-        Rails.logger.info request
         response = parse(ssl_post(test? ? self.test_url : self.live_url, request))
-
         success = response[:decision] == "ACCEPT"
         message = @@response_codes[('r' + response[:reasonCode]).to_sym] rescue response[:message]
         authorization = success ? [ options[:order_id], response[:requestID], response[:requestToken] ].compact.join(";") : nil
